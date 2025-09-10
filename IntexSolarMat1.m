@@ -1,0 +1,85 @@
+T = T_wi; % initial temperature in storage
+T_env = 293 % Ambient temperature of air
+
+  % tube (storage to pump)
+
+ for section = 1:n % loop for # of segments
+ T_tube1_inlet = T_wi;
+
+        energy_balance = - (1/R_cond) * (T_tube_outer - T_w) - ... % conduction from water to outer part of tube
+                (1/R_conv) * (T_tube_outer - T_env) - ...  % convection to air
+                (1/R_rad) * (T_tube_outer^4 - T_env^4) == 0; % radiation to surroundings
+
+        T_tube_outer = solve(energy_balance, T_tube_outer); % solve for the temperature at the outer part of the tube
+
+        Q_cond = (1/R_cond) * (T_tube_outer - T_w); % solve for heat conducted from water to tube
+
+        dT = Q_cond / (massSegment * cWater); % change in temperature over segment
+   
+        T_tube1_outlet = T_tube1_inlet + dT;  % new temperature for next segment
+ end
+
+ %pump segment?
+
+ % tube (from pump to hose)
+    for section = 1:n % loop for # of segments
+        T_w = T;
+        energy_balance = - (1/R_cond) * (T_tube_outer - T_w) - ... % conduction from water to outer part of tube
+                (1/R_conv) * (T_tube_outer - T_env) - ... % convection to air
+                (1/R_rad) * (T_tube_outer^4 - T_env^4) == 0; % radiation to surroundings
+
+        T_tube_outer = solve(energy_balance, T_tube_outer); % solve for the temperature at the outer part of the tube
+
+        Q_cond = (1/R_cond) * (T_tube_outer - T_w); % solve for heat conducted from water to tube
+
+        dT = Q_cond / (massSegment * cWater); % change in temperature over segment
+
+        % new temperature for next segment
+        T = T + dT; 
+    end
+
+% hose (tube connection to collector)
+
+    for section = 1:n % loop for # of segments
+            T_w = T;
+            energy_balance_hose1 = irradiance * areaHose1 - (1/R_cond_hose) * (T_hose1_outer - T_w) - ... % conduction from water to outer part of tube
+                    (1/R_conv_hose) * (T_hose1_outer - T_env) - ... % convection to air
+                    (1/R_rad_hose) * (T_hose1_outer^4 - T_env^4) == 0; % radiation to surroundings
+    
+            T_hose_outer = solve(energy_balance_hose1, T_hose1_outer); % solve for the temperature at the outer part of the hose
+    
+            Q_cond_hose1 = (1/R_cond_hose) * (T_hose1_outer - T_w); % solve for heat conducted from water to hose
+    
+            dT = Q_cond_hose1 / (massSegmentHose1 * cWater); % change in temperature over segment
+    
+            % new temperature for next segment
+            T = T + dT; 
+    end
+
+% collector
+
+    for section = 1:n % loop for # of segments
+            T_w = T;
+            energy_balance_collectorTop = irradiance * areaCollector - (1/R_cond_coll) * (T_coll_outer - T_w) - ... % conduction from water to outer part of tube
+                    (1/R_conv_coll) * (T_coll_outer - T_env) - ... % convection to air
+                    (1/R_rad_coll) * (T_coll_outer^4 - T_env^4) == 0; % radiation to surroundings
+
+            energy_balance_collectorBottom = - (1/R_cond_coll) * (T_coll_outer - T_w) - ... % conduction from water to outer part of tube
+                    (1/R_conv_coll) * (T_coll_outer - T_alum) - ... % convection to aluminum
+                    (1/R_rad_coll) * (T_coll_outer^4 - T_env^4) == 0; % radiation to surroundings
+    
+            T_coll_outer = solve(energy_balance_collector, T_coll_outer); % solve for the temperature at the outer part of the hose
+    
+            Q_cond_coll = (1/R_cond_coll) * (T_coll_outer - T_w); % solve for heat conducted from water to hose
+    
+            dT = Q_cond_coll / (massSegmentColl1 * cWater); % change in temperature over segment
+    
+            % new temperature for next segment
+            T = T + dT; 
+    end
+
+% hose (collector to tube connection)
+
+% tube (hose to storage)
+
+% storage
