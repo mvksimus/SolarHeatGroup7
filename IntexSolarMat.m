@@ -1,6 +1,7 @@
 
 T = T_wi; % initial temperature at pump
 
+ % tube (storage to pump)
  % tube (from pump to hose)
     for section = 1:n % loop for # of segments
         T_w = T;
@@ -18,3 +19,12 @@ T = T_wi; % initial temperature at pump
         T = T + dT; 
     end
 
+% hose (tube connection to collector)
+
+% collector
+
+% hose (collector to tube connection)
+
+% tube (hose to storage)
+
+% storage
