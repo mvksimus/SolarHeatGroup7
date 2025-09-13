@@ -34,11 +34,6 @@ R_rad_tube = 1/(S_B*2*pi*em_PU*(d_out/2)*L_c_to_s);
 volume_tubes = pi*L_s_to_c*(d_in/2)^2;
 volume_tube = pi*L_c_to_s*(d_in/2)^2;
 
-%R_cond_hose = ;
-%R_conv_hose = ;
-%R_rad_hose = ;
-%volume_hose = ;
-
 d_c = 0.001;     % Not mentioned
 d_al = 0.002;    %
 d_table = 0.006;
@@ -67,21 +62,11 @@ for section = 1:10
 % tube (storage to pump)
 T1 = HeatLossPerSection (T, T_env, R_cond_tubes, R_conv_tubes, R_rad_tubes, density, volume_tubes, cd_water, irradiance, 0);
 
-% pump segment?
-% I think not necessairy.
-%T2 = HeatLossPerSection (T1, T_env, R_cond_pump, R_conv_pump, R_rad_pump, density, volume_pump, cd_water, irradiance, 0);
-
 % tube (from pump to hose)
 T2 = HeatLossPerSection (T1, T_env, R_cond_tubes, R_conv_tubes, R_rad_tubes, density, volume_tubes, cd_water, irradiance, 0);
 
-% hose (tube connection to collector)
-%T3 = HeatLossPerSection (T2, T_env, R_cond_hose, R_conv_hose, R_rad_hose, density, volume_hose, cd_water, irradiance, sunlit_area_h);
-
 % collector
 T3 = HeatLossPerSection (T2, T_env, R_cond_collector, R_conv_collector, R_rad_collector, density, volume_collector, cd_water, irradiance, sunlit_area_c);
-
-% hose (collector to tube connection)
-%T5 = HeatLossPerSection (T4, T_env, R_cond_hose, R_conv_hose, R_rad_hose, density, volume_hose, cd_water, irradiance, sunlit_area_h);
 
 % tube (hose to storage)
 T4 = HeatLossPerSection (T3, T_env, R_cond_tube, R_conv_tube, R_rad_tube, density, volume_tube, cd_water, irradiance, 0);
@@ -106,27 +91,6 @@ function [T] = HeatLossPerSection (T, T_env, R_cond, R_conv, R_rad, density, vol
     %             (1/R_rad) * (T_outer^4 - T_env^4) == 0; % radiation to surroundings
 
     % (1/R_rad) * (T_outer^4) + (1/R_cond + 1/R_conv) * T_outer - (irradiance*sunlit_area + (T_env^4)/R_rad + T_w/R_cond + T_env/R_conv) = 0; 
-
-    %coef = [(1/R_rad), 0, 0, (1/R_cond + 1/R_conv), -((irradiance*sunlit_area)+(T_env^4)/R_rad+T_w/R_cond+T_env/R_conv)];
-    %T_outer_solutions = roots(coef);
-
-    %disp(coef)
-    %disp(T_outer_solutions)
-    
-    %T_outer = 273;
-
-    %for solution = 1:4
-    %    if isreal(T_outer_solutions(solution)) && (abs(T_outer_solutions(solution)-273)) >= (abs(T_outer-273))
-    %        T_outer = T_outer_solutions(solution);
-    %    end
-    %end
-    
-    %if T_outer == 273
-    %    error("No real solutions")
-    %end
-    %disp(T_outer)
-
-    % T_outer = solve(energy_balance, T_outer); % solve for the temperature at the outer part of the tube
 
     T_outer = ((irradiance*sunlit_area)+T_w/R_cond+T_env/R_conv)/(1/R_cond + 1/R_conv);
 
